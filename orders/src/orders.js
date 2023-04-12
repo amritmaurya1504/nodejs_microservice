@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const axios = require("axios");
+const cors = require("cors");
 
 // database
 const mongoose = require("mongoose");
@@ -9,6 +10,7 @@ mongoose.connect('mongodb://root:secret@mongo:27017/order?authSource=admin');
 
 // middlewares
 app.use(express.json());
+app.use(cors());
 
 // PORT
 const PORT = process.env.PORT || 4000;
@@ -48,13 +50,15 @@ app.get("/get/:id",async (req,res) => {
         if(getOrder){
             const custId = getOrder.customerId.toString();
             const bId = getOrder.bookId.toString();
-            const customerDatat = await axios.get(`http://localhost:3000/get/${custId}`);
-            console.log(customerDatat)
-            const bookData = await axios.get(`http://localhost:2000/get/${bId}`);
-            console.log(bookData)
+            // sending request via REST to customer services
+            const customerData = await axios.get(`http://customers:3000/get/${custId}`);
+            // sending request via REST to books services
+            const bookData = await axios.get(`http://books:2000/get/${bId}`);
             const orderDetails = {
-                name : customerDatat.name,
-                bookName : bookData.name
+                name : customerData.data.name,
+                bookName : bookData.data.name,
+                orderDate : getOrder.dop,
+                deliveryDate : getOrder.dod
             }
 
             res.json(orderDetails);

@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 // database
 const mongoose = require("mongoose");
@@ -8,6 +9,7 @@ mongoose.connect('mongodb://root:secret@mongo:27017/customer?authSource=admin');
 
 // middlewares
 app.use(express.json());
+app.use(cors());
 
 // PORT
 const PORT = process.env.PORT || 3000;
