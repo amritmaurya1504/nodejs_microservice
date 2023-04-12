@@ -1,0 +1,59 @@
+version: '3'
+services:
+  books:
+    build:
+      context: './books'
+      dockerfile: Dockerfile
+    ports:
+      - "2000:2000"
+    container_name: books-service
+    volumes:
+      - ./books/src:/app/src:ro
+    networks:
+      - microservices-network
+    depends_on:
+      - mongo
+  customers:
+    build:
+      context: './customers'
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    container_name: customers-service
+    volumes:
+      - ./customers/src:/app/src:ro
+    networks:
+      - microservices-network
+    depends_on:
+      - mongo
+  orders:
+    build:
+      context: './orders'
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    container_name: orders-service
+    volumes:
+      - ./orders/src:/app/src:ro
+    networks:
+      - microservices-network
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports: 
+      - 27017:27017
+    container_name: database-container
+    networks:
+      - microservices-network
+    volumes:
+      - mongoData:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=notes
+
+networks:
+  microservices-network:
+volumes:
+  mongoData:
